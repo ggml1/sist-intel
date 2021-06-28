@@ -5,12 +5,12 @@ class Food {
     this.position = createVector(0, 0);
   }
 
-  spawn(grid, player) {
+  spawn() {
     while (true) {
       this.position.x = int(random(grid.rows));
       this.position.y = int(random(grid.columns));
       if (grid.cells[this.position.x][this.position.y].kind != WALL) {
-        if (this.position.x != player.position.x && this.position.y != player.position.y) {
+        if (this.position.x != player.position.x || this.position.y != player.position.y) {
           return 0;
         }
       }
@@ -19,14 +19,11 @@ class Food {
 
   draw() {
     fill('blue');
-    let cellCenterX = grid.OFFSET_X + this.position.y * CELL_SIZE;
-    let cellCenterY = grid.OFFSET_Y + this.position.y * CELL_SIZE;
-    ellipse(cellCenterX, cellCenterY, FOOD_SIZE);
+    let pixelPos = getCellPixelMapping(this.position);
+    ellipse(pixelPos.x, pixelPos.y, FOOD_SIZE);
   }
   
   getPos() {
-    let x = grid.OFFSET_X + this.position.y * CELL_SIZE;
-    let y = grid.OFFSET_Y + this.position.y * CELL_SIZE;
-    return createVector(x, y);
+    return getCellPixelMapping(this.position);
   }
 }

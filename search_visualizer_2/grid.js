@@ -1,3 +1,6 @@
+GRID_OFFSET_X = 100;
+GRID_OFFSET_Y = 100;
+
 let Grid = function(rows, columns) {
   this.rows = rows;
   this.columns = columns;
@@ -7,9 +10,9 @@ let Grid = function(rows, columns) {
 
 Grid.prototype.generate = function() {
   this.cells = [];
-  for (i = 0; i < this.rows; ++i) {
-    row = [];
-    for (j = 0 ; j < this.columns; ++j) {
+  for (let i = 0; i < this.rows; ++i) {
+    let row = [];
+    for (let j = 0 ; j < this.columns; ++j) {
       row.push(new Cell());
     }
     this.cells.push(row);
@@ -17,13 +20,9 @@ Grid.prototype.generate = function() {
 };
 
 Grid.prototype.draw = function() {
-  for (i = 0; i < this.rows; ++i) {
-    for (j = 0; j < this.columns; ++j) {
-      posX = this.OFFSET_X + CELL_SIZE * i;
-      posY = this.OFFSET_Y + CELL_SIZE * j;
-      fill(this.cells[i][j].getColor());
-      rectMode(CENTER);
-      rect(posX, posY, CELL_SIZE, CELL_SIZE);
+  for (let i = 0; i < this.rows; ++i) {
+    for (let j = 0; j < this.columns; ++j) {
+      drawCell(createVector(i, j), this.cells[i][j].getColor());
     }
   }
 };

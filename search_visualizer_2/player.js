@@ -32,7 +32,7 @@ class Player {
     let d = desired.mag();
     desired.normalize();
     
-    if (d < 100) { 
+    if (d < 100) {
       let m = map(d, 0, 100, 0, this.maxspeed);
       desired.mult(m);
     } else { 
@@ -46,17 +46,15 @@ class Player {
  
   draw() {
     fill('red');
-    ellipse(this.pixelPos.y, this.pixelPos.y, PLAYER_SIZE);
+    ellipse(this.pixelPos.x, this.pixelPos.y, PLAYER_SIZE);
   }
   
-  spawn(grid) {
+  spawn() {
     while (true) {
       this.position.x = int(random(grid.rows));
       this.position.y = int(random(grid.columns));
       if (grid.cells[this.position.x][this.position.y].kind != WALL) {
-        let _x = grid.OFFSET_X + this.position.x * CELL_SIZE;
-        let _y = grid.OFFSET_Y + this.position.y * CELL_SIZE;
-        this.pixelPos = createVector(_x, _y);
+        this.pixelPos = getCellPixelMapping(this.position);
         return 0;
       }
     }
