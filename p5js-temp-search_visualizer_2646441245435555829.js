@@ -1,9 +1,9 @@
-GRID_ROWS = 25;
-GRID_COLUMNS = 25;
+GRID_ROWS = 30;
+GRID_COLUMNS = 30;
 
 function setup() {
   // DISPLAY
-  createCanvas(1024,768);
+  createCanvas(1440,900);
   background(220);
   frameRate(30);
   
@@ -49,6 +49,7 @@ function setup() {
   pathToFoodIndex = 0;
   
   // STATES
+  entrypoint = true;
   visitingCells = false;
   highlightPath = false;
   
@@ -60,11 +61,18 @@ function setup() {
   food.draw();
 }
 
-function draw() {  
-  if (visitingCells) {
+function draw() {
+  if (entrypoint) {
+    console.log("entrada");
+    visitingCells = false;
+    highlightPath = false;
+    
+  } else if (visitingCells) {
+    console.log("visitando");
     let currentCell = queue[queueIndex];
     if (currentCell.x != player.position.x || currentCell.y != player.position.y) {
-      drawCell(currentCell, "yellow");
+      // drawCell(currentCell, "yellow");
+      grid.cells[currentCell.x][currentCell.y].cor = VISITED_CELL;
     }
     if (currentCell.x == food.position.x && currentCell.y == food.position.y) {
       food.draw(); // do not paint on top of food
@@ -82,7 +90,8 @@ function draw() {
   } else if (highlightPath) {
     if (pathToFoodIndex < pathToFood.length) {
       let cellOnPath = pathToFood[pathToFoodIndex];
-      drawCell(cellOnPath, "lightblue");
+      // drawCell(cellOnPath, "lightblue");
+      grid.cells[cellOnPath.x][cellOnPath.y].cor = PATH_CELL;
       if (equalPos(cellOnPath, food.position)) {
         food.draw();
       }
@@ -91,10 +100,34 @@ function draw() {
       }
       pathToFoodIndex += 1;
     } else {
+      pathToFoodIndex = 0;
+      followPath = true;
       highlightPath = false;
-      noLoop();
+    }
+  } else if (followPath) {
+    if (pathToFoodIndex < pathToFood.length) {
+      let nextCell = pathToFood[pathToFoodIndex];
+      let nextCellPixelPos = getCellPixelMapping(nextCell);
+      player.arrive(nextCellPixelPos);
+      player.run();
+      console.log("Player indo: ", player.pixelPos, nextCellPixelPos);
+      if (player.pixelPos.dist(nextCellPixelPos) < 2) {
+        let startIdx = pathToFoodIndex;
+        while (pathToFoodIndex + 1 < pathToFood.length) {
+          if (!(pathToFood[pathToFoodIndex + 1].x == pathToFood[startIdx].x || pathToFood[pathToFoodIndex + 1].y == pathToFood[startIdx].y)) {
+            break;
+          }
+          pathToFoodIndex += 1;
+        }
+      }
+    } else {
+      followPath = false;
+      entrypoint = true;
     }
   }
+  grid.draw();
+  player.draw();
+  food.draw();
   /*
   player.arrive(food.getPos());
   player.run();
@@ -103,6 +136,9 @@ function draw() {
 }
 
 function reset() {
+  entrypoint = true;
+  grid.draw();
+  player.draw();
   food = new Food();
   food.spawn();
   food.draw();
@@ -156,6 +192,7 @@ function runBFS() {
   activeAlgorithm = 'BFS';
   queue = [];
   queue.push(player.position);
+  entrypoint = false;
   visitingCells = true;
 }
 
@@ -165,6 +202,7 @@ function runDFS() {
   activeAlgorithm = 'DFS';
   queue = [];
   queue.push(player.position);
+  entrypoint = false;
   visitingCells = true;
 }
 
@@ -174,6 +212,7 @@ function runDijkstra() {
   activeAlgorithm = "Dijkstra";
   queue = [];
   queue.push([player.position, 0]);
+  entrypoint = false;
   visitingCells = true;
 }
 
@@ -183,5 +222,6 @@ function runAStar() {
   activeAlgorithm = "A*";
   queue = [];
   queue.push([player.position, 0]);
+  entrypoint = false;
   visitingCells = true;
 }

@@ -2,11 +2,14 @@ WALL = 0;
 GROUND = 1;
 SLOWGROUND = 2;
 VERYSLOWGROUND = 3;
+VISITED_CELL = 4;
+PATH_CELL = 5;
 
 CELL_SIZE = 25;
 
 let Cell = function() {
   this.kind = int(random(4));
+  this.cor = this.kind;
   this.visited = false;
 };
 
@@ -17,9 +20,10 @@ Cell.prototype.getColor = function() {
     2 = SLOW GROUND
     3 = VERY SLOW GROUND
     4 = VISITED CELL
+    5 = PATH_CELL
   */
-  let colors = ['gray', 'white', 'lightgreen', 'mediumseagreen', 'yellow'];
-  return colors[this.kind % colors.length];
+  let colors = ['gray', 'white', 'lightgreen', 'mediumseagreen', 'yellow', 'lightblue'];
+  return colors[this.cor % colors.length];
 };
 
 function drawCell(cell, cellColor) {
@@ -36,6 +40,7 @@ function fetchNextCells(cell, algorithm) {
       let nextCell = graph[cell.x][cell.y][i][0];
       if (!visited[nextCell.x][nextCell.y]) {
         beforeOnPath[nextCell.x][nextCell.y] = createVector(cell.x, cell.y);
+        visited[nextCell.x][nextCell.y] = true;
         cells.push(nextCell);
       }
     }

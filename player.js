@@ -3,10 +3,10 @@ PLAYER_SIZE = 20;
 class Player {
   constructor(x, y) {
     this.acceleration = createVector(0, 0);
-    this.velocity = createVector(3, -2);
+    this.velocity = createVector(0, 0);
     this.position = createVector(0, 0);
     this.pixelPos = createVector(0, 0);
-    this.maxspeed = 3;
+    this.maxspeed = 10;
     this.maxforce = 0.15;
   }
     
@@ -32,8 +32,8 @@ class Player {
     let d = desired.mag();
     desired.normalize();
     
-    if (d < 100) {
-      let m = map(d, 0, 100, 0, this.maxspeed);
+    if (d < 155) {
+      let m = map(d, 0, 155, 0, this.maxspeed);
       desired.mult(m);
     } else { 
       desired.mult(this.maxspeed);
