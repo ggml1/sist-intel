@@ -1,9 +1,9 @@
-GRID_ROWS = 10;
-GRID_COLUMNS = 10;
+GRID_ROWS = 30;
+GRID_COLUMNS = 30;
 
 function setup() {
   // DISPLAY
-  createCanvas(1024,768);
+  createCanvas(1440,900);
   background(220);
   frameRate(30);
   
@@ -69,35 +69,25 @@ function draw() {
     
   } else if (visitingCells) {
     console.log("visitando");
-    let currentCell = queue[queueIndex];
+    let currentCell = fetchNextToVisit();
     if (currentCell.x != player.position.x || currentCell.y != player.position.y) {
-      // drawCell(currentCell, "yellow");
-      grid.cells[currentCell.x][currentCell.y].cor = VISITED_CELL;
+      grid.cells[currentCell.x][currentCell.y].cor = getVisitedCellColor(currentCell);
     }
     if (currentCell.x == food.position.x && currentCell.y == food.position.y) {
-      food.draw(); // do not paint on top of food
       visitingCells = false;
       pathToFood = buildPathToFood();
       highlightPath = true;
     } else {
-      visited[currentCell.x][currentCell.y] = true;
-      queueIndex += 1;
       let nextCells = fetchNextCells(currentCell, activeAlgorithm);
       for (let i = 0; i < nextCells.length; i++) {
         queue.push(nextCells[i]);
       }
     }
   } else if (highlightPath) {
+    console.log("pintando");
     if (pathToFoodIndex < pathToFood.length) {
       let cellOnPath = pathToFood[pathToFoodIndex];
-      // drawCell(cellOnPath, "lightblue");
       grid.cells[cellOnPath.x][cellOnPath.y].cor = PATH_CELL;
-      if (equalPos(cellOnPath, food.position)) {
-        food.draw();
-      }
-      if (equalPos(cellOnPath, player.position)) {
-        player.draw();
-      }
       pathToFoodIndex += 1;
     } else {
       pathToFoodIndex = 0;
@@ -110,7 +100,6 @@ function draw() {
       let nextCellPixelPos = getCellPixelMapping(nextCell);
       player.arrive(nextCellPixelPos);
       player.run();
-      console.log("Player indo: ", player.pixelPos, nextCellPixelPos);
       if (player.pixelPos.dist(nextCellPixelPos) < 2) {
         let startIdx = pathToFoodIndex;
         while (pathToFoodIndex + 1 < pathToFood.length) {
@@ -176,12 +165,15 @@ function initializeGraph() {
 function initializeVisited() {
   visited = [];
   beforeOnPath = [];
+  dist = [];
   for (let i = 0; i < GRID_ROWS; ++i) {
     visited.push([]);
     beforeOnPath.push([]);
+    dist.push([]);
     for (let j = 0; j < GRID_COLUMNS; ++j) {
       visited[i].push(false);
       beforeOnPath[i].push(null);
+      dist[i].push(123456789);
     }
   }
 }
@@ -191,7 +183,8 @@ function runBFS() {
   initializeVisited();
   activeAlgorithm = 'BFS';
   queue = [];
-  queue.push(player.position);
+  queue.push([player.position, 0]);
+  dist[player.position.x][player.position.y] = 0;
   entrypoint = false;
   visitingCells = true;
 }
@@ -201,7 +194,7 @@ function runDFS() {
   initializeVisited();
   activeAlgorithm = 'DFS';
   queue = [];
-  queue.push(player.position);
+  queue.push([player.position]);
   entrypoint = false;
   visitingCells = true;
 }
@@ -212,6 +205,7 @@ function runDijkstra() {
   activeAlgorithm = "Dijkstra";
   queue = [];
   queue.push([player.position, 0]);
+  dist[player.position.x][player.position.y] = 0;
   entrypoint = false;
   visitingCells = true;
 }

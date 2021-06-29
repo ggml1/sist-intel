@@ -58,6 +58,17 @@ function fetchNextCells(cell) {
         cells.push([nextCell, dist[cell.x][cell.y] + weight]);
       }
     }
+  } else if (activeAlgorithm == 'A*') {
+    for (let i = 0; i < graph[cell.x][cell.y].length; ++i) {
+      let nextCell = graph[cell.x][cell.y][i][0];
+      let weight = graph[cell.x][cell.y][i][1];
+      if (dist[nextCell.x][nextCell.y] > dist[cell.x][cell.y] + dist2[nextCell.x][nextCell.y] + weight) {
+        let totalWeight = dist[cell.x][cell.y] + dist2[nextCell.x][nextCell.y] + weight;
+        beforeOnPath[nextCell.x][nextCell.y] = createVector(cell.x, cell.y);
+        dist[nextCell.x][nextCell.y] = totalWeight;
+        cells.push([nextCell, totalWeight]);
+      }
+    }
   }
   return cells;
 }
@@ -67,6 +78,27 @@ function fetchNextToVisit() {
     let cell = queue[queueIndex][0];
     queueIndex += 1;
     return cell;
+  } else if (activeAlgorithm == 'Dijkstra' || activeAlgorithm == 'A*') {
+    let minDist = 123456789;
+    let chosenCell = null;
+    for (let i = 0; i < queue.length; ++i) {
+      let cell = queue[i][0];
+      let curDist = queue[i][1];
+      if (curDist < minDist) {
+        minDist = curDist;
+        chosenCell = cell;
+      }
+    }
+    let newQueue = [];
+    for (let i = 0; i < queue.length; ++i) {
+      let cell = queue[i][0];
+      let weight = queue[i][1];
+      if (cell.x != chosenCell.x || cell.y != chosenCell.y) {
+        newQueue.push([cell, weight]);
+      }
+    }
+    queue = newQueue;
+    return chosenCell;
   }
 }
 

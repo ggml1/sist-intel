@@ -1,5 +1,5 @@
-GRID_OFFSET_X = 300;
-GRID_OFFSET_Y = 200;
+GRID_OFFSET_X = 100;
+GRID_OFFSET_Y = 100;
 
 let Grid = function(rows, columns) {
   this.rows = rows;

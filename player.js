@@ -6,7 +6,7 @@ class Player {
     this.velocity = createVector(0, 0);
     this.position = createVector(0, 0);
     this.pixelPos = createVector(0, 0);
-    this.maxspeed = 10;
+    this.maxspeed = 6;
     this.maxforce = 0.15;
   }
     
